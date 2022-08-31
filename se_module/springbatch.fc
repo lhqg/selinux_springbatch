@@ -1,0 +1,46 @@
+############################################################################
+#
+#	Springbacth SELinux policymodule
+#
+#	https://github.com/hubertqc/selinux_springbatch
+#
+#
+# Copyright (c) 2022 H. Quarantel-Colombani <hubert@quarantel.name>
+# Author: Hubert Quarantel-Colombani <hubert@quarantel.name>
+#
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of version 2 of the GNU General Public License as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+#
+############################################################################
+
+
+/(lib|etc)/systemd/system/springbatch@?.*					gen_context(system_u:object_r:springbatch_unit_file_t,s0)
+#
+/var/log/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_log_t,s0)
+/var/run/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_run_t,s0)
+/var/tmp/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_tmp_t,s0)
+/var/lib/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_var_t,s0)
+/srv/springbatch(/.*)?								gen_context(system_u:object_r:springbatch_var_t,s0)
+#
+/opt/springbatch/bin/springbatch_service				--	gen_context(system_u:object_r:springbatch_exec_t,s0)
+/opt/springbatch/service/.*						--	gen_context(system_u:object_r:springbatch_exec_t,s0)
+/opt/springbatch/(.*/)?.*\.(so|jar)([\.p-][0-9]+)*			--	gen_context(system_u:object_r:springbatch_lib_t,s0)
+/opt/springbatch/(.*/)?env(.*/)?						gen_context(system_u:object_r:springbatch_conf_t,s0)
+/opt/springbatch/(.*/)?(conf|properties)(/.*)?					gen_context(system_u:object_r:springbatch_conf_t,s0)
+/opt/springbatch/(.*/)?(conf|properties)?/.*\.(jks|jceks|p12|pkcs12)	--	gen_context(system_u:object_r:springbatch_auth_t,s0)
+/opt/springbatch/(.*/)?keys(/.*)?						gen_context(system_u:object_r:springbatch_auth_t,s0)
+/opt/springbatch/(.*/)?(lib|app)(/.*)?						gen_context(system_u:object_r:springbatch_lib_t,s0)
+/opt/springbatch/(.*/)?bin(/.*)?						gen_context(system_u:object_r:springbatch_bin_t,s0)
+/opt/springbatch/(.*/)?run(/.*)?						gen_context(system_u:object_r:springbatch_run_t,s0)
