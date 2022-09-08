@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.1.0)
+policy_module(springbatch, 0.2.0)
 
 ########################################
 #
@@ -233,12 +233,12 @@ filetrans_add_pattern(springbatch_t,	springbatch_tmp_t,	springbatch_tmp_t,	{ dir
 filetrans_add_pattern(springbatch_t,	tmp_t,			springbatch_tmp_t,	dir,				"hsperfdata_springbatch" )
 
 allow	springbatch_t	springbatch_log_t:dir		add_entry_dir_perms;
-allow	springbatch_t	springbatch_log_t:file		{ create_file_perms append_file_perms read_file_perms };
+allow	springbatch_t	springbatch_log_t:file		{ create_file_perms append_file_perms read_file_perms rename_file_perms };
 logging_log_filetrans(springbatch_t,	springbatch_log_t,	{ file	dir }	)
 
 if	(allow_springbatch_purge_logs)	{
 	allow	springbatch_t	springbatch_log_t:dir	rw_dir_perms;
-	allow	springbatch_t	springbatch_log_t:file	{ rename_file_perms delete_file_perms };
+	allow	springbatch_t	springbatch_log_t:file	delete_file_perms;
 }
 
 dontaudit	springbatch_t	domain:dir	getattr;
