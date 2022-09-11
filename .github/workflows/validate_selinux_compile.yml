@@ -2,12 +2,19 @@
 # SELinux code validation workflow
 #
 name: "Validate SELinux code"
-
+  paths:
+      - '**.te'
+      - '**.fc'
+      - '**.if'
 on:
   push:
-    branches: [ "*" ]
+  
   pull_request:
     branches: [ "main" ]
+    paths:
+      - '**.te'
+      - '**.fc'
+      - '**.if'
 
 jobs:
   build:
