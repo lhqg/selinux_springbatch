@@ -2,12 +2,12 @@
 # SELinux code validation workflow
 #
 name: "Validate SELinux code"
-  paths:
+on:
+  push:
+    paths:
       - '**.te'
       - '**.fc'
       - '**.if'
-on:
-  push:
   
   pull_request:
     branches: [ "main" ]
