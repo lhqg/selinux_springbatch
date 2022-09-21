@@ -26,21 +26,40 @@
 
 ########################################
 ## <summary>
-##      Authorize Sprinbatch to connect a service port
+##      Authorize Springboot batch job to connect to remote port
 ## </summary>
-## <param name="domain">
+## <param name="service">
 ##      <summary>
-##      The domain prefix to be authorized to connect to (TCP).
+##      The service name prefix to allow connection to (TCP).
+##	e.g.: ldap
 ##      </summary>
 ## </param>
 #
-interface(`springbatch_consumed_service',`
-        gen_require(`
-                type            $1_t;
-                attribute       springbatch_consumed_svc_type;
-;
-        ')
+interface(`springbatch_allow_connectto',`
+	gen_require(`
+		type		$1_port_t;
+	')
+	
+	allow	springbatch_t	$1_port_t:tcp_socket	name_connect;
+')
 
-        typeattribute $1_t  springbatch_consumed_svc_type;
-
+########################################
+## <summary>
+##      Add service to services Springboot batch job
+##	is allowed to connnect to
+## </summary>
+## <param name="service">
+##      <summary>
+##      The service name prefix to allow connection to (TCP).
+##	e.g.: ldap
+##      </summary>
+## </param>
+#
+interface(`springbatch_allow_consumed_service',`
+	gen_require(`
+		type		$1_port_t;
+		attribute	springbatch_consumed_svc_type;
+	')
+	
+	typeattribute	$1_port_t	springbatch_consumed_svc_type;
 ')
