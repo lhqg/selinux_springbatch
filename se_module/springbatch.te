@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.2.0)
+policy_module(springbatch, 0.3.0)
 
 ########################################
 #
@@ -144,8 +144,12 @@ logging_send_audit_msgs(springbatch_t)
 
 allow	springbatch_t	self:capability	{ chown	dac_override dac_read_search fowner fsetid kill };
 allow	springbatch_t	self:process	{ signal_perms setsockcreate execmem execstack };
-allow	springbatch_t	self:fifo_file	rw_fifo_file_perms;
+
+allow	springbatch_t	self:dir	list_dir_perms;
 allow	springbatch_t	self:file	{ getattr read };
+allow	springbatch_t	self:lnk_file	read_lnk_file_perms;
+allow	springbatch_t	self:fifo_file	rw_fifo_file_perms;
+
 allow	springbatch_t	self:sem	create_sem_perms;
 allow	springbatch_t	self:shm	create_shm_perms;
 
