@@ -20,13 +20,25 @@ on:
       - '**.if'
 
 jobs:
-  build:
-    name: Validate SELinux code
-    env:
-      SEMODULE: springbatch
-      
-    runs-on: [self-hosted, CentOS-8]
 
+  compile:
+    name: Validate SELinux code
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@main
+  
+  semodule_info:
+    name: Get SELinux module informations
+    needs: compile
+      
+    runs-on: ubuntu-latest
+
+    env:
+
+      SEMODULE: springbatch
     permissions:
       actions: read
       contents: read
@@ -37,10 +49,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Compile
-        run: |
-          cd se_module/ && make -f /usr/share/selinux/devel/Makefile ${SEMODULE}.pp
 
       - name: Get SELinux policy module characteristics
         id: semodule_chars
@@ -66,16 +74,15 @@ jobs:
 
   add_tag:
     name: Add SELinux module version tag on the branch
+    needs: semodule_info
+
+    runs-on: ubuntu-latest
 
     if: ( github.event_name == 'push' && ( github.ref_name == 'main' || startsWith(github.ref_name, 'release/') ) ) || github.event_name == 'workflow_dispatch'
-
-    needs: build
     
     env:
       SEMODULE: springbatch
       
-    runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 

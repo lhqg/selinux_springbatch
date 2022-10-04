@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.3.0)
+policy_module(springbatch, 0.4.0)
 
 ########################################
 #
@@ -71,6 +71,8 @@ files_tmp_file(springbatch_tmp_t)
 
 type		springbatch_unit_file_t;
 systemd_unit_file(springbatch_unit_file_t);
+
+bool	allow_springbatch_connect_http		true;
 
 bool	allow_springbatch_purge_logs		false;
 bool	allow_webadm_read_springbatch_files	false;
@@ -199,7 +201,9 @@ allow	springbatch_t	cert_t:lnk_file		read_lnk_file_perms;
 
 #	Allow	to	perform	network	operations
 
-allow	springbatch_t	http_port_t:tcp_socket			name_connect;
+if (allow_springbatch_connect_http) {
+	allow	springbatch_t	http_port_t:tcp_socket			name_connect;
+}
 
 #	Allow to consume authorized network services
 allow	springbatch_t	springbatch_consumed_svc_type:tcp_socket		name_connect;
