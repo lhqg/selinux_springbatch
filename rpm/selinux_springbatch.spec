@@ -1,16 +1,21 @@
 Name:      springbatch-selinux
-Version:   %{provided_version}
-Release:   %{provided_release}%{?dist}
+Version:   %{_provided_version}
+Release:   %{_provided_release}%{?dist}
 Summary:	 SELinux policy module for Springboot batch jobs/tasks
 License:	 GPLv2
 URL:       https://github.com/hubertqc/selinux_springbatch
 #Source:    %{name}-%{version}.tar.gz
 BuildArch: noarch
 
-Requires:	selinux-policy-devel
-Requires:	selinux-policy-targeted
+BuildRequires:	selinux-policy-devel
+BuildRequires:	make
+
+Requires:	selinux-policy-targeted %{?_sepol_minver_cond}
+Requires:	selinux-policy-targeted %{?_sepol_maxver_cond}
+
 Requires:	policycoreutils
-Requires:	make
+Requires:	policycoreutils-python-utils
+Requires:	libselinux-utils
 
 %description
 SELinux policy module to confine Springbatch applications started using systemd.
@@ -37,24 +42,25 @@ make -f /usr/share/selinux/devel/Makefile -C %{_builddir} springbatch.pp
 %install
 
 mkdir -p -m 0755 %{buildroot}/usr/share/selinux/packages/targeted
-mkdir -p -m 0755 %{buildroot}/usr/share/selinux/devel/include/apps
 mkdir -p -m 0755 %{buildroot}/%{_docdir}/%{name}
+mkdir -p -m 0755 %{buildroot}/%{_datarootdir}/%{name}
 
-install -m 0444 %{_builddir}/se_module/springbatch.if %{buildroot}/usr/share/selinux/devel/include/apps/
-
-bzip2 %{_builddir}/springbatch.pp
-install -m 0444 %{_builddir}/springbatch.pp.bz2 %{buildroot}/usr/share/selinux/packages/targeted/
-
+install -m 0555 %{_builddir}/scripts/* %{buildroot}/%{_datarootdir}/%{name}/
+install -m 0444 %{_builddir}/springbatch.pp %{buildroot}/usr/share/selinux/packages/targeted/
 install -m 0444 %{_builddir}/{LICENSE,README.md} %{buildroot}/%{_docdir}/%{name}/
 
 ###################################
 
 %post
 
-mkdir -m 0700 /tmp/selinux-springbatch
-bzcat -dc /usr/share/selinux/packages/targeted/springbatch.pp.bz2 > /tmp/selinux-springbatch/springbatch.pp
-semodule -i /tmp/selinux-springbatch/springbatch.pp
-rm -rf /tmp/selinux-springbatch
+semodule -i /usr/share/selinux/packages/targeted/springbatch.pp
+
+if selinuxenabled
+then
+  restorecon -RFi /{opt,srv}/springbatch 
+  restorecon -RFi /{lib,etc}/systemd/system/springbatch*
+  restorecon -RFi /var/{lib,log,run,tmp}/springbatch
+fi
 
 ###################################
 
@@ -70,7 +76,11 @@ fi
 %files
 %defattr(-,root,root,-)
 
-/usr/share/selinux/devel/include/apps/springbatch.if
-/usr/share/selinux/packages/targeted/springbatch.pp.bz2
-%license  %{_docdir}/%{name}/LICENSE
-%doc      %{_docdir}/%{name}/README.md
+/usr/share/selinux/packages/targeted/springbatch.pp
+
+%dir	%{_datarootdir}/%{name}
+%{_datarootdir}/%{name}/*
+
+%dir		%{_docdir}/%{name}
+%license 	%{_docdir}/%{name}/LICENSE
+%doc		%{_docdir}/%{name}/README.md
