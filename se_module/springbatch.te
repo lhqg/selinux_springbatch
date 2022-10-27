@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.4.0)
+policy_module(springbatch, 0.7.0)
 
 ########################################
 #
@@ -69,17 +69,41 @@ type		springbatch_tmp_t;
 typeattribute	springbatch_tmp_t	springbatch_file_type;
 files_tmp_file(springbatch_tmp_t)
 
+type		springbatch_dynlib_t;
+typeattribute	springbatch_dynlib_t	springbatch_file_type;
+files_type(springbatch_dynlib_t)
+
 type		springbatch_unit_file_t;
 systemd_unit_file(springbatch_unit_file_t);
 
-bool	allow_springbatch_connect_http		true;
+bool	allow_springbatch_connectto_http		true;
 
-bool	allow_springbatch_purge_logs		false;
-bool	allow_webadm_read_springbatch_files	false;
+bool	allow_springbatch_connectto_smtp		false;
+bool	allow_springbatch_connectto_ldap		false;
+
+bool	allow_springbatch_connectto_oracle		false;
+bool	allow_springbatch_connectto_mysql		false;
+bool	allow_springbatch_connectto_pgsql		false;
+bool	allow_springbatch_connectto_redis		false;
+bool	allow_springbatch_connectto_couchdb		false;
+bool	allow_springbatch_connectto_mongodb		false;
+
+bool	allow_springbatch_dynamic_libs			false;
+bool	allow_springbatch_purge_logs			false;
+
+bool	allow_webadm_read_springbatch_files		false;
 bool	allow_sysadm_write_springbatch_files	false;
 
 gen_require(`
 	type	http_port_t;
+	type	smtp_port_t;
+	type	ldap_port_t;
+	type	oracle_port_t;
+	type	mysqld_port_t;
+	type	postgresql_port_t;
+	type	redis_port_t;
+	type	couchdb_port_t;
+	type	mongod_port_t;
 
 	type	proc_t;
 	type	proc_net_t;
@@ -195,22 +219,56 @@ allow	springbatch_t	cert_t:dir		list_dir_perms;
 allow	springbatch_t	cert_t:file		read_file_perms;
 allow	springbatch_t	cert_t:lnk_file		read_lnk_file_perms;
 
-#
-##	Permissions	on	Springboot	specific	resources
-#
-
 #	Allow	to	perform	network	operations
 
-if (allow_springbatch_connect_http) {
-	allow	springbatch_t	http_port_t:tcp_socket			name_connect;
+corenet_tcp_connect_ocsp_port(springbatch_t)
+
+if (allow_springbatch_connectto_http) {
+	allow	springbatch_t	http_port_t:tcp_socket		name_connect;
+}
+
+if (allow_springbatch_connectto_ldap) {
+	allow	springbatch_t	ldap_port_t:tcp_socket	name_connect;
+}
+
+if (allow_springbatch_connectto_smtp) {
+	allow	springbatch_t	smtp_port_t:tcp_socket	name_connect;
+}
+
+
+if (allow_springbatch_connectto_oracle) {
+	allow	springbatch_t	oracle_port_t:tcp_socket	name_connect;
+}
+
+if (allow_springbatch_connectto_mysql) {
+	allow	springbatch_t	mysqld_port_t:tcp_socket	name_connect;	
+}
+
+if (allow_springbatch_connectto_pgsql) {
+	allow	springbatch_t	postgresql_port_t:tcp_socket	name_connect;
+}
+
+if (allow_springbatch_connectto_redis) {
+	allow	springbatch_t	redis_port_t:tcp_socket	name_connect;
+}
+
+if (allow_springbatch_connectto_couchdb) {
+	allow	springbatch_t	couchdb_port_t:tcp_socket	name_connect;
+}
+
+if (allow_springbatch_connectto_mongodb) {
+	allow	springbatch_t	mongod_port_t:tcp_socket	name_connect;
 }
 
 #	Allow to consume authorized network services
 allow	springbatch_t	springbatch_consumed_svc_type:tcp_socket		name_connect;
 allow	springbatch_t	springbatch_consumed_svc_type:udp_socket		{ recv_msg send_msg };
 
+#
+##	Permissions	on	Springbatch	specific	resources
+#
 
-#	Permissions	on	Springboot	specific	files/dirs
+#	Permissions	on	Springbatch	specific	files/dirs
 
 allow	springbatch_t	springbatch_file_type:dir		list_dir_perms;
 allow	springbatch_t	springbatch_file_type:file		read_file_perms;
@@ -218,6 +276,18 @@ allow	springbatch_t	springbatch_file_type:lnk_file	read_lnk_file_perms;
 
 allow	springbatch_t	springbatch_bin_t:file		exec_file_perms;
 allow	springbatch_t	springbatch_lib_t:file		map;
+
+if	(allow_springbatch_dynamic_libs)	{
+	allow	springbatch_t	springbatch_dynlib_t:dir		{ create_dir_perms rw_dir_perms };
+	allow	springbatch_t	springbatch_dynlib_t:file		manage_file_perms;
+	allow	springbatch_t	springbatch_dynlib_t:file		exec_file_perms;
+	allow	springbatch_t	springbatch_dynlib_t:lnk_file	manage_lnk_file_perms;
+
+	filetrans_add_pattern(springbatch_t,	springbatch_dynlib_t,	springbatch_dynlib_t,	{ dir file lnk_file } )
+}
+type_transition	springbatch_t	springbatch_var_t:dir	springbatch_dynlib_t	"lib" ;
+type_transition	springbatch_t	springbatch_run_t:dir	springbatch_dynlib_t	"lib" ;
+type_transition	springbatch_t	springbatch_tmp_t:dir	springbatch_dynlib_t	"lib" ;
 
 allow	springbatch_t	springbatch_exec_t:file		exec_file_perms;
 
@@ -267,6 +337,7 @@ allow	sysadm_t	springbatch_var_t:file		read_file_perms;
 allow	sysadm_t	springbatch_run_t:file		read_file_perms;
 allow	sysadm_t	springbatch_tmp_t:file		read_file_perms;
 allow	sysadm_t	springbatch_lib_t:file		read_file_perms;
+allow	sysadm_t	springbatch_dynlib_t:file	read_file_perms;
 allow	sysadm_t	springbatch_log_t:file		read_file_perms;
 allow	sysadm_t	springbatch_exec_t:file		read_file_perms;
 

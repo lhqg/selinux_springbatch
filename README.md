@@ -1,6 +1,6 @@
 SELinux policy module for Springboot batch jobs
 ==========================================================
-https://github.com/hubertqc/selinux_springbatch
+<https://github.com/hubertqc/selinux_springbatch>
 
 ## Introduction
 
@@ -27,38 +27,38 @@ The policy can be adjusted with a handfull of SELinux booleans.
 
 ### Filesystem labelling
 This SELinux policy module SELinux file context definitions are based on the Filesystem 
-Hierarchy Standards [https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard].
+Hierarchy Standards [<https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard>].
 
-The root for the Springboot batch installation is expected to be /opt/springbatch.
+The root for the Springboot batch installation is expected to be /opt/Springboot.
 The root for log files of the Springboot batch jobs/tasks is expected to be
- /var/log/springbatch.
+ /var/log/Springboot.
 
 A typical directory layout for the Springboot batch `my_job` would be:
 
 ```
-/opt/springbatch/my_job
+/opt/Springboot/my_job
                       \ conf
                       \ lib
                       \ keys
                       
-/var/log/springbatch/my_job
+/var/log/Springboot/my_job
 
-/var/run/springbatch/my_job
+/var/run/Springboot/my_job
 
-/srv/springbatch/my_job
+/srv/Springboot/my_job
                       \ cache
                       \ work
                       \ dynlib
                       
 ```
 
-Files with `.so` and `.jar` extensions under the /opt/springbatch and /srv/springbatch 
-trees will be assigned the *Springbatch library* SELinux type.
+Files with `.so` and `.jar` extensions under the /opt/Springboot and /srv/Springboot 
+trees will be assigned the *Springboot library* SELinux type.
 
 Files with `.jks`, `.jceks`, `.p12` or `.pkcs12`extensions placed in a `conf`or
-`properties` directory under /opt/springbatch will be assigned the *Springbatch 
+`properties` directory under /opt/Springboot will be assigned the *Springboot 
 authentication/credentials* SELinux type. All files located in a `keys`directory under
- /opt/springbatch will be assigned the same SELinux type.
+ /opt/Springboot will be assigned the same SELinux type.
 
 
 Should you prefer to used a different directory structure, you should consider using
@@ -75,10 +75,36 @@ One of the `springbatch_allow_connectto` or `springbatch_allow_consumed_service`
 should be used with the prefix name for the service as the only argument.
 
 Examples:
-- `springbatch_allow_connectto(postgresql)` to allow the Springboot batch job to connect to a PostgreSQL database
-- `springbatch_allow_connectto(ldap)` to allow connection to LDAP directory services.
+- `springbatch_allow_connectto(hplip)` to allow the Springboot batch job to connect to a printing system using HP technologies,
+- `springbatch_allow_connectto(rabbitmq)` to allow connection to a RabbitMQ infrastructure.
 
 ### SELinux booleans
+
+#### allow_springbatch_connectto_http      (default: `true`)
+When switch to `true`this boolean allows the Springboot batch job to connect to remote
+HTTP/HTTPS ports (locally assigned the `http_port_t` SELinux type).
+
+#### allow_springbatch_connectto_self      (default: `false`)
+When switch to `true`this boolean allows the Springboot batch job to connect to other remote
+Springboot application (locally assigned the `springbatch_port_t` SELinux type).
+
+#### allow_springbatch_connectto_ldap      (default: `false`)
+When switch to `true`this boolean allows the Springboot batch job to connect to remote
+LDAP/LDAPS ports (locally assigned the `ldap_port_t` SELinux type).
+
+#### allow_springbatch_connectto_smtp      (default: `false`)
+When switch to `true`this boolean allows the Springboot batch job to connect to remote
+SMTP/SMTPS/submission ports (locally assigned the `smtp_port_t` SELinux type).
+
+#### Mutiple booleans allow_springbatch_connectto_<DB>      (default: `false`)
+When switch to `true`these boolean allows the Springboot batch job to connect to remote
+database server ports: `couchdb`, `mongodb`, `mysql` (MariaDB), `oracle`, `pgsql` (PostgreSQL), `redis`.
+
+#### allow_springbatch_dynamic_libs		(default: `false`)
+When switched to `true`, this boolean allows the Springboot batch job to create and use
+(execute) SO libraries and JAR files under the /srv/Springboot/.../dynlib directory.
+Use with care, i.e. only when strictly required, as this would allow a compromised
+Springboot application to offload arbitrary code and use it.
 
 #### allow_springbatch_purge_logs		(default: `false`)
 When switched to `true`n, this boolean allows the Springboot batch job to delete its log
@@ -113,13 +139,13 @@ The Springboot batch jobs should always and ony be started as a **systemd** serv
 the`systemctl` command.
 
 The service or target unit files MUST be located in /etc/systemd/system or in
-/lib/systemd/system, the file name MUST start with `springbatch`.
+/lib/systemd/system, the file name MUST start with `Springboot`.
 Directories to tune or override unit behaviour are supported.
 Template/instantiated units are supported provided the master file is named
-`springbatch@.service`.
+`Springboot@.service`.
 
 The script(s) used to start or stop the Springboot batch MUST be located in the 
-/opt/springbatch/service/ directory. The /opt/springbatch/bin/springbatch_service file name
+/opt/Springboot/service/ directory. The /opt/Springboot/bin/springbatch_service file name
 is also supported.
 
 ### Running multiple Springboot batch jobs/tasks on the same host

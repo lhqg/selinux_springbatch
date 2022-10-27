@@ -32,7 +32,10 @@
 /var/run/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_run_t,s0)
 /var/tmp/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_tmp_t,s0)
 /var/lib/springbatch(/.*)?							gen_context(system_u:object_r:springbatch_var_t,s0)
+#
 /srv/springbatch(/.*)?								gen_context(system_u:object_r:springbatch_var_t,s0)
+/srv/springbatch/(.*/)?dyn(lib|app)(/.*)?					gen_context(system_u:object_r:springbatch_dynlib_t,s0)
+/srv/springbatch/(.*/)?.*\.(so|jar)([\.p-][0-9]+)*			--	gen_context(system_u:object_r:springbatch_dynlib_t,s0)
 #
 /opt/springbatch/bin/springbatch_service				--	gen_context(system_u:object_r:springbatch_exec_t,s0)
 /opt/springbatch/service/.*						--	gen_context(system_u:object_r:springbatch_exec_t,s0)
