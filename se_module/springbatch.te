@@ -227,10 +227,6 @@ if (allow_springbatch_connectto_http) {
 	allow	springbatch_t	http_port_t:tcp_socket		name_connect;
 }
 
-if (allow_springbatch_connectto_self) {
-	allow	springbatch_t	springbatch_port_t:tcp_socket	name_connect;
-}
-
 if (allow_springbatch_connectto_ldap) {
 	allow	springbatch_t	ldap_port_t:tcp_socket	name_connect;
 }
