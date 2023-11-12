@@ -368,7 +368,7 @@ if	(allow_sysadm_write_springbatch_files)	{
 	allow	sysadm_t	springbatch_conf_t:file	write_file_perms;
 }
 
-if	(allow_sysadm_manage_springboot_auth_files)	{
+if	(allow_sysadm_manage_springbatch_auth_files)	{
 	allow	sysadm_t	springbatch_auth_t:dir	rw_dir_perms;
 	allow	sysadm_t	springbatch_auth_t:file	manage_file_perms;
 }
@@ -402,4 +402,4 @@ allow	logadm_t	springbatch_file_type:lnk_file				read_lnk_file_perms;
 allow	logadm_t	springbatch_log_t:dir		{ list_dir_perms del_entry_dir_perms delete_dir_perms create_dir_perms reparent };
 allow	logadm_t	springbatch_log_t:file		{ delete_file_perms rename_file_perms };
 
-filetrans_add_pattern(logadm_t,	springboot_log_t, springboot_log_t, dir)
+filetrans_add_pattern(logadm_t,	springbatch_log_t, springbatch_log_t, dir)
