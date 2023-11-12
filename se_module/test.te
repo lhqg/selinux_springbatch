@@ -1,0 +1,15 @@
+policy_module(test, 0.0.1)
+
+type springbatch_test1_t;
+type springbatch_test2_t;
+type springbatch_test3_t;
+type springbatch_test4_t;
+type springbatch_test5_t;
+
+springbatch_deployer(springbatch_test2)
+springbatch_systemd_deployer(springbatch_test3)
+springbatch_systemd_unit_instance_deployer(springbatch_test4, dummy_instance)
+springbatch_auth_deployer(springbatch_test5)
+
+springbatch_allow_connectto(http)
+springbatch_allow_consumed_service(ldap)

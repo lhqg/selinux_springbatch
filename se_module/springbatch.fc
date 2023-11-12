@@ -36,6 +36,9 @@
 /srv/springbatch(/.*)?								gen_context(system_u:object_r:springbatch_var_t,s0)
 /srv/springbatch/(.*/)?dyn(lib|app)(/.*)?					gen_context(system_u:object_r:springbatch_dynlib_t,s0)
 /srv/springbatch/(.*/)?.*\.(so|jar)([\.p-][0-9]+)*			--	gen_context(system_u:object_r:springbatch_dynlib_t,s0)
+/srv/springbatch/(.*/)?(conf|properties)(/.*)?					gen_context(system_u:object_r:springbatch_conf_t,s0)
+/srv/springbatch/(.*/)?(conf|properties)?/.*\.(jks|jceks|p12|pkcs12)	--	gen_context(system_u:object_r:springbatch_auth_t,s0)
+/srv/springbatch/(.*/)?keys(/.*)?						gen_context(system_u:object_r:springbatch_auth_t,s0)
 #
 /opt/springbatch/bin/springbatch_service				--	gen_context(system_u:object_r:springbatch_exec_t,s0)
 /opt/springbatch/service/.*						--	gen_context(system_u:object_r:springbatch_exec_t,s0)

@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.7.0)
+policy_module(springbatch, 0.8.0)
 
 ########################################
 #
@@ -33,12 +33,17 @@ policy_module(springbatch, 0.7.0)
 ########################################
 
 attribute	springbatch_file_type;
+attribute	springbatch_deploy_file_type;
+
 attribute	springbatch_consumed_svc_type;
 
 systemd_domain_template(springbatch)
+typeattribute	springbatch_exec_t	springbatch_file_type;
+typeattribute	springbatch_exec_t	springbatch_deploy_file_type;
 
 type		springbatch_conf_t;
 typeattribute	springbatch_conf_t	springbatch_file_type;
+typeattribute	springbatch_exec_t	springbatch_deploy_file_type;
 files_config_file(springbatch_conf_t)
 
 type		springbatch_auth_t;
@@ -55,22 +60,27 @@ files_type(springbatch_var_t)
 
 type 		springbatch_run_t;
 typeattribute	springbatch_run_t	springbatch_file_type;
+typeattribute	springbatch_run_t	springbatch_deploy_file_type;
 files_type(springbatch_run_t)
 
 type		springbatch_bin_t;
 typeattribute	springbatch_bin_t	springbatch_file_type;
+typeattribute	springbatch_bin_t	springbatch_deploy_file_type;
 application_executable_file(springbatch_bin_t)
 
 type		springbatch_lib_t;
 typeattribute	springbatch_lib_t	springbatch_file_type;
+typeattribute	springbatch_lib_t	springbatch_deploy_file_type;
 files_type(springbatch_lib_t)
 
 type		springbatch_tmp_t;
 typeattribute	springbatch_tmp_t	springbatch_file_type;
+typeattribute	springbatch_tmp_t	springbatch_deploy_file_type;
 files_tmp_file(springbatch_tmp_t)
 
 type		springbatch_dynlib_t;
 typeattribute	springbatch_dynlib_t	springbatch_file_type;
+typeattribute	springbatch_dynlib_t	springbatch_deploy_file_type;
 files_type(springbatch_dynlib_t)
 
 type		springbatch_unit_file_t;
@@ -91,8 +101,9 @@ bool	allow_springbatch_connectto_mongodb		false;
 bool	allow_springbatch_dynamic_libs			false;
 bool	allow_springbatch_purge_logs			false;
 
-bool	allow_webadm_read_springbatch_files		false;
-bool	allow_sysadm_write_springbatch_files	false;
+bool	allow_webadm_read_springbatch_files			false;
+bool	allow_sysadm_write_springbatch_files		false;
+bool	allow_sysadm_manage_springbatch_auth_files	false;
 
 gen_require(`
 	type	http_port_t;
@@ -357,13 +368,18 @@ if	(allow_sysadm_write_springbatch_files)	{
 	allow	sysadm_t	springbatch_conf_t:file	write_file_perms;
 }
 
+if	(allow_sysadm_manage_springboot_auth_files)	{
+	allow	sysadm_t	springbatch_auth_t:dir	rw_dir_perms;
+	allow	sysadm_t	springbatch_auth_t:file	manage_file_perms;
+}
+
 #
 ##	Permissions for Web admins (webadm_t)
 #
 
-allow	webadm_t	springbatch_file_type:dir	list_dir_perms;
-allow	webadm_t	springbatch_file_type:file	getattr_file_perms;
-allow	webadm_t	springbatch_file_type:lnk_file	read_lnk_file_perms;
+allow	webadm_t	springbatch_file_type:dir					list_dir_perms;
+allow	webadm_t	springbatch_file_type:notdevfile_class_set	getattr;
+allow	webadm_t	springbatch_file_type:lnk_file				read_lnk_file_perms;
 
 allow	webadm_t	springbatch_unit_file_t:file	read_file_perms;
 allow	webadm_t	springbatch_unit_file_t:service	{ stop	start	status };
@@ -375,3 +391,15 @@ if	(allow_webadm_read_springbatch_files)	{
 	allow	webadm_t	springbatch_tmp_t:file	read_file_perms;
 }
 
+#
+##	Permissions for log admins (logadm_t)
+#
+
+allow	logadm_t	springbatch_file_type:dir					search_dir_perms;
+allow	logadm_t	springbatch_file_type:notdevfile_class_set	getattr;
+allow	logadm_t	springbatch_file_type:lnk_file				read_lnk_file_perms;
+
+allow	logadm_t	springbatch_log_t:dir		{ list_dir_perms del_entry_dir_perms delete_dir_perms create_dir_perms reparent };
+allow	logadm_t	springbatch_log_t:file		{ delete_file_perms rename_file_perms };
+
+filetrans_add_pattern(logadm_t,	springboot_log_t, springboot_log_t, dir)
