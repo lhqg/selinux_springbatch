@@ -37,7 +37,8 @@
 #
 interface(`springbatch_allow_connectto',`
 	gen_require(`
-		type		$1_port_t;
+		type	springbatch_t
+		type	$1_port_t;
 	')
 	
 	allow	springbatch_t	$1_port_t:tcp_socket	name_connect;
