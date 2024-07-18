@@ -48,6 +48,7 @@ jobs:
     needs: get_release_info
     uses: Laurent-Gaillard/selinux_build_modules/.github/workflows/generic_semodule_build.yml@main
     with:
+      build_os_matrix: '[ "almalinux8", "centos_stream9", "fedora_37", "fedora_38", "fedora_39", "fedora_40" ]'
       spec_file_location: rpm/
       selinux_files_location: se_module/
       release_upload_url: ${{ needs.get_release_info.outputs.upload_url }}
