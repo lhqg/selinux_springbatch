@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.8.0)
+policy_module(springbatch, 0.9.0)
 
 ########################################
 #
@@ -230,7 +230,7 @@ allow	springbatch_t	cert_t:dir		list_dir_perms;
 allow	springbatch_t	cert_t:file		read_file_perms;
 allow	springbatch_t	cert_t:lnk_file		read_lnk_file_perms;
 
-#	Allow	to	perform	network	operations
+#	Allow to perform network operations
 
 corenet_tcp_connect_ocsp_port(springbatch_t)
 
@@ -274,6 +274,19 @@ if (allow_springbatch_connectto_mongodb) {
 #	Allow to consume authorized network services
 allow	springbatch_t	springbatch_consumed_svc_type:tcp_socket		name_connect;
 allow	springbatch_t	springbatch_consumed_svc_type:udp_socket		{ recv_msg send_msg };
+
+#	Optionally allow to connect to Springboot application services
+optional {
+	gen_require(`
+		type	springboot_port_t;
+	')
+
+	bool	allow_springbatch_connectto_springboot	false;
+
+	if (allow_springbatch_connectto_springboot) {
+		allow	springbatch_t	springboot_port_t:tcp_socket	name_connect;
+	}
+}
 
 #
 ##	Permissions	on	Springbatch	specific	resources

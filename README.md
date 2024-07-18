@@ -4,8 +4,8 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/hubertqc/selinux_springbatch)](https://github.com/hubertqc/selinux_springbatch/commits/main)
 [![GitHub last commit](https://img.shields.io/github/last-commit/hubertqc/selinux_springbatch)](https://github.com/hubertqc/selinux_springbatch/commits/main)
 
-SELinux policy module for Springboot batch jobs
-==========================================================
+# SELinux policy module for Springboot batch jobs
+
 <https://github.com/hubertqc/selinux_springbatch>
 
 ## Introduction
@@ -28,10 +28,11 @@ run on the host in the dedicated `springbatch_t` SELinux domain.
 Once the SELinux policy module is compiled and installed in the running Kernel SELinux
  policy, a few actions must be taken for the new policy to apply to the Springboot
  batch jobs/tasks.
- 
+
 The policy can be adjusted with a handfull of SELinux booleans.
 
 ### Filesystem labelling
+
 This SELinux policy module SELinux file context definitions are based on the Filesystem 
 Hierarchy Standards [<https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard>].
 
@@ -41,7 +42,7 @@ The root for log files of the Springboot batch jobs/tasks is expected to be
 
 A typical directory layout for the Springboot batch `my_job` would be:
 
-```
+```text
 /opt/springbatch/my_job
                       \ conf
                       \ lib
@@ -74,6 +75,7 @@ in the policy module, using the `semanage fcontext -a -e ORIGINAL CUSTOMISATION`
 ### Networking
 
 #### Services consumed by the Springboot application
+
 If the batch job needs to connect to services such as databases, directory servers, ...
 the SELinux type of these services network port must be allowed for the Springboot
 application to connect to.
@@ -81,39 +83,54 @@ One of the `springbatch_allow_connectto` or `springbatch_allow_consumed_service`
 should be used with the prefix name for the service as the only argument.
 
 Examples:
+
 - `springbatch_allow_connectto(hplip)` to allow the Springboot batch job to connect to a printing system using HP technologies,
 - `springbatch_allow_connectto(rabbitmq)` to allow connection to a RabbitMQ infrastructure.
 
 ### SELinux booleans
 
+#### OPTIONAL: allow_springbatch_connectto_springboot     (default: `false`)
+
+When switched to `true` this boolean allows the Springboot batch job to connect to
+Springboot application service ports (locally assigned the `springboot_port_t` SELinux type).
+This boolean is available and effective only if the [selinux_springboot](https://github.com/lhqg/selinux_springboot/)
+SELInux module is also installed on the host (and was loaded prior to the `selinux_springbatch` module).
+
 #### allow_springbatch_connectto_http      (default: `true`)
-When switch to `true`this boolean allows the Springboot batch job to connect to remote
+
+When switched to `true` this boolean allows the Springboot batch job to connect to
 HTTP/HTTPS ports (locally assigned the `http_port_t` SELinux type).
 
 #### allow_springbatch_connectto_ldap      (default: `false`)
-When switch to `true`this boolean allows the Springboot batch job to connect to remote
+
+When switched to `true` this boolean allows the Springboot batch job to connect to
 LDAP/LDAPS ports (locally assigned the `ldap_port_t` SELinux type).
 
 #### allow_springbatch_connectto_smtp      (default: `false`)
-When switch to `true`this boolean allows the Springboot batch job to connect to remote
+
+When switched to `true` this boolean allows the Springboot batch job to connect to
 SMTP/SMTPS/submission ports (locally assigned the `smtp_port_t` SELinux type).
 
 #### Mutiple booleans allow_springbatch_connectto_<DB>      (default: `false`)
-When switch to `true`these boolean allows the Springboot batch job to connect to remote
+
+When switched to `true` these boolean allows the Springboot batch job to connect to
 database server ports: `couchdb`, `mongodb`, `mysql` (MariaDB), `oracle`, `pgsql` (PostgreSQL), `redis`.
 
 #### allow_springbatch_dynamic_libs		(default: `false`)
+
 When switched to `true`, this boolean allows the Springboot batch job to create and use
 (execute) SO libraries and JAR files under the /srv/springbatch/.../dynlib directory.
 Use with care, i.e. only when strictly required, as this would allow a compromised
 Springboot application to offload arbitrary code and use it.
 
 #### allow_springbatch_purge_logs		(default: `false`)
+
 When switched to `true`, this boolean allows the Springboot batch job to delete its log
 files. It can be useful for log file rotation, but it can also be useful for attackers who
 would like to clean after themselves and remove traces of their actions...
 
 #### allow_webadm_read_springbatch_files		(default: `false`)
+
 Users running with the `webadm_r` SELinux role and ` webadm_t` domain are granted the
 permissions to browse the directories of the Springboot batch job and the permission to
 stop and start the Springboot batch job **systemd** services, as well as querying their
@@ -124,8 +141,10 @@ contents of Springboot batch job files: log, configuration, temp and transient/c
 files.
 
 #### allow_sysadm_write_springbatch_files	(default: `false`)
+
 When switched to `true`, this boolean allows users running with the `sysadm_r` SELinux role
 and `sysadm_t` domain to:
+
 - fully manage temporary files,
 - delete and rename log files,
 - delete and rename transient/cache files,
@@ -133,7 +152,6 @@ and `sysadm_t` domain to:
 
 Otherwise, such users are only granted read permissions on all Springboot batch jobs
 files, except authentication/credentials files.
- 
 
 ### Starting the Springboot batch jobs/tasks
 
@@ -153,7 +171,6 @@ is also supported.
 ### Running multiple Springboot batch jobs/tasks on the same host
 
 TO DO
-
 
 ## Disclaimer
 
