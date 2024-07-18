@@ -1,6 +1,7 @@
 #!/bin/bash
 #################################################################
 # Springboot batch job control script.
+#	https://github.com/lhqg/selinux_springbatch
 #
 # This is called by systemmd to start the batch job
 #
