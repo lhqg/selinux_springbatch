@@ -1,15 +1,17 @@
-How to Submit Patches to the SELinux Springboot Project
+How to Submit Patches to the SELinux Springboot batch jobs Project
 ===============================================================================
-https://github.com/hubertqc/selinux_springbatch
+
+<https://github.com/lhqg/selinux_springbatch>
 
 This document is intended to act as a guide to help you contribute to the
-SELinux Springboot project.
+SELinux Springboot batch/jobs project.
 
 ## Test Your Code
 
-Unfortunately, we do not have a test suite for the SELinux Springboot project.
+Unfortunately, we do not have a test suite for the SELinux Springboot batch/jobs
+project.
 Therefore, you MUST make sure that iat the very least your code compile without
-any error on a RHEL 7/8 or CentOS 7/8 using the Makefile from the
+any error on a RHEL 7/8/9 or CentOS 7/8/9 using the Makefile from the
 selinux-policy-devel RPM of such GNU/Linux distributions.
 
 Please, try your best not to break anything, and if you break something, make
@@ -25,10 +27,12 @@ Depending on how you decided to work with the code base and what tools you are
 using there are different ways to generate your patch(es).  However, regardless
 of what tools you use, you should always generate your patches using the
 "unified" diff/patch format and the patches should always apply to the SELinux
-Springboot source tree using the following command from the top directory of
-the sources repository:
+Springboot batch/jobs source tree using the following command from the top
+directory of the sources repository:
 
-	% patch -p1 < changes.patch
+```text
+% patch -p1 < changes.patch
+```
 
 If you are not using git, stacked git (stgit), or some other tool which can
 generate patch files for you automatically, you may find the following command
@@ -36,11 +40,13 @@ helpful in generating patches, where "selinux_springbatch.orig/" is the unmodifi
 source code directory and "selinux_springbatch/" is the source code directory with
 your changes:
 
-	% diff -purN selinux_springbatch.orig/ selinux_springbatch/
+```text
+% diff -purN selinux_springbatch.orig/ selinux_springbatch/
+```
 
 When in doubt please generate your patch and try applying it to an unmodified
-copy of the SELinux Springboot sources; if it fails for you, it will fail for the
-rest of us.
+copy of the SELinux Springboot batch/jobs sources; if it fails for you, it will
+fail for the rest of us.
 
 ## Explain Your Work
 
@@ -58,43 +64,48 @@ certifies that you wrote it or otherwise have the right to pass it on as an
 open-source patch.  The "Developer's Certificate of Origin" pledge is taken
 from the Linux Kernel and the rules are pretty simple:
 
-	Developer's Certificate of Origin 1.1
+```text
+Developer's Certificate of Origin 1.1
 
-	By making a contribution to this project, I certify that:
+By making a contribution to this project, I certify that:
 
-	(a) The contribution was created in whole or in part by me and I
-	    have the right to submit it under the open source license
-	    indicated in the file; or
+(a) The contribution was created in whole or in part by me and I
+ have the right to submit it under the open source license
+ indicated in the file; or
 
-	(b) The contribution is based upon previous work that, to the best
-	    of my knowledge, is covered under an appropriate open source
-	    license and I have the right under that license to submit that
-	    work with modifications, whether created in whole or in part
-	    by me, under the same open source license (unless I am
-	    permitted to submit under a different license), as indicated
-	    in the file; or
+(b) The contribution is based upon previous work that, to the best
+ of my knowledge, is covered under an appropriate open source
+ license and I have the right under that license to submit that
+ work with modifications, whether created in whole or in part
+ by me, under the same open source license (unless I am
+ permitted to submit under a different license), as indicated
+ in the file; or
 
-	(c) The contribution was provided directly to me by some other
-	    person who certified (a), (b) or (c) and I have not modified
-	    it.
+(c) The contribution was provided directly to me by some other
+ person who certified (a), (b) or (c) and I have not modified
+ it.
 
-	(d) I understand and agree that this project and the contribution
-	    are public and that a record of the contribution (including all
-	    personal information I submit with it, including my sign-off) is
-	    maintained indefinitely and may be redistributed consistent with
-	    this project or the open source license(s) involved.
+(d) I understand and agree that this project and the contribution
+ are public and that a record of the contribution (including all
+ personal information I submit with it, including my sign-off) is
+ maintained indefinitely and may be redistributed consistent with
+ this project or the open source license(s) involved.
+```
 
 ... then you just add a line to the bottom of your patch description, with
 your real name, saying:
 
-	Signed-off-by: Random J Developer <random@developer.example.org>
+```text
+Signed-off-by: Random J Developer <random@developer.example.org>
+```
 
 ## Post Your Patches Upstream
 
-The SELinux Springboot project accepts both GitHub pull requests and patches sent 
-via the mailing list.  GitHub pull requests are preferred.  This sections below
-explain how to contribute via either method. Please read each step and perform
-all steps that apply to your chosen contribution method.
+The SELinux Springboot batch/jobs project accepts both GitHub pull requests
+and patches sent via the mailing list.  GitHub pull requests are preferred.
+This sections below explain how to contribute via either method. Please
+read each step and perform all steps that apply to your chosen contribution
+method.
 
 ### Submitting via Email
 
@@ -104,15 +115,19 @@ of what tools you use, you should always generate your patches using the
 "unified" diff/patch format and the patches should always apply to the source
 tree using the following command from the top directory of the sources:
 
-	# patch -p1 < changes.patch
+```text
+# patch -p1 < changes.patch
+```
 
 If you are not using git, stacked git (stgit), or some other tool which can
 generate patch files for you automatically, you may find the following command
-helpful in generating patches, where "selinux_springbatch.orig/" is the unmodified
+helpful in generating patches, where "selinux_springboot.orig/" is the unmodified
 source code directory and "selinux_springbatch/" is the source code directory with
 your changes:
 
-	# diff -purN selinux_springbatch.orig/ selinux_springbatch/
+```text
+# diff -purN selinux_springbatch.orig/ selinux_springbatch/
+```
 
 When in doubt please generate your patch and try applying it to an unmodified
 copy of the sources; if it fails for you, it will fail for the rest of us.

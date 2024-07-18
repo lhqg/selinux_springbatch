@@ -1,12 +1,14 @@
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/hubertqc/selinux_springbatch)
-[![License](https://img.shields.io/badge/License-GPLv2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-[![GitHub issues](https://img.shields.io/github/issues/hubertqc/selinux_springbatch)](https://github.com/hubertqc/selinux_springbatch/issues)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/hubertqc/selinux_springbatch)](https://github.com/hubertqc/selinux_springbatch/commits/main)
-[![GitHub last commit](https://img.shields.io/github/last-commit/hubertqc/selinux_springbatch)](https://github.com/hubertqc/selinux_springbatch/commits/main)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/lhqg/selinux_springbatch)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![GitHub issues](https://img.shields.io/github/issues/lhqg/selinux_springbatch)](https://github.com/lhqg/selinux_springbatch/issues)
+[![GitHub PR](https://img.shields.io/github/issues-pr/lhqg/selinux_springbatch)](https://github.com/lhqg/selinux_springbatch/pulls)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/lhqg/selinux_springbatch)](https://github.com/lhqg/selinux_springbatch/commits/main)
+[![GitHub last commit](https://img.shields.io/github/last-commit/lhqg/selinux_springbatch)](https://github.com/lhqg/selinux_springbatch/commits/main)
+![GitHub Downloads](https://img.shields.io/github/downloads/lhqg/selinux_springbatch/total)
 
 # SELinux policy module for Springboot batch jobs
 
-<https://github.com/hubertqc/selinux_springbatch>
+<https://github.com/lhqg/selinux_springbatch>
 
 ## Introduction
 
