@@ -13,18 +13,18 @@ PrivateTmp=true
 ProtectSystem=true
 PrivateDevices=true
 
-User=springboot
-Group=springboot
+User=springbatch
+Group=springbatch
 
-WorkingDirectory=/opt/springboot/%I
-EnvironmentFile=/opt/springboot/%I/env
+WorkingDirectory=/opt/springbatch/%I
+EnvironmentFile=/opt/springbatch/%I/env
 
-ExecStartPre=/opt/springboot/bin/springboot-service.sh %I cleanup
-ExecStartPre=/opt/springboot/bin/springboot-service.sh %I precheck
+ExecStartPre=/opt/springbatch/bin/springbatch-service.sh %I cleanup
+ExecStartPre=/opt/springbatch/bin/springbatch-service.sh %I precheck
 
-ExecStart=/opt/springboot/bin/springboot-service %I start
+ExecStart=/opt/springbatch/bin/springbatch-service %I start
 
-ExecStopPost=/opt/springboot/bin/springboot-service.sh %I cleanup
+ExecStopPost=/opt/springbatch/bin/springbatch-service.sh %I cleanup
 
 TimeoutStartSec=1200s
 TimeoutStopSec=120s
