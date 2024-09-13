@@ -1,0 +1,269 @@
+'\" t
+.TH springbatch_selinux 8 "Springbatch SELinux policy man page"
+.LO 8
+
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH Name
+springbatch_selinux \- Security Enhanced Linux Policy for Java Spring Batch services
+
+.SH Description
+.PP
+Security-Enhanced Linux (SELinux) secures the Java Springbatch processes via flexible
+mandatory access control (MAC).
+.PP
+The Springbatch job/service processes execute with the \fIspringbatch_t\fR SELinux
+type (domain).
+.PP
+You can check if you have these processes running by executing the \fBps\fR
+command with the \fB\-Z\fR qualifier.
+.PP
+For example:
+.RS 2
+\fBps \-eZ | grep springbatch_t\fR
+.RE
+
+.SH Entrypoints
+.PP
+The springbatch_t SELinux type/domain can be entered via the \fIspringbatch_exec_t\fR file type.
+.br 
+The default entrypoint paths for the springbatch_t domain are the following:
+/opt/springbatch/bin/springbatch_service and /opt/springbatch/service/*
+.RE
+
+.SH Process types
+.PP
+SELinux defines process types (domains) for each process running on the system.
+Policy governs the access confined processes have to files/directories and all other types
+of resources on the system (network ports, other processes...). 
+.PP
+The springbatch_t process type (domain) is defined for Springbatch job/service processes.
+.PP
+Note: \fBsemanage permissive \-a springbatch_t\fR
+.RS 2
+Can be used to make the process type springbatch_t permissive.
+.br
+Permissive process types are not denied access by SELinux. AVC messages will still be generated.
+.RE
+
+.SH Booleans
+.PP
+The SELinux policy rules for the springbatch_t domain can be tuned using predefined booleans to allow/disallow
+the Springbatch job different actions.
+.PP
+\fBallow_springbatch_connectto_http\fR (true)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to HTTP ports (labeled as http_port_t).
+.RE
+.PP
+\fBallow_springbatch_syslog_netsend\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) and send (UDP) to syslog ports (labeled as syslogd_port_t or syslog_tls_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_ldap\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to LDAP ports (labeled as ldap_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_smtp\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to SMTP ports (labeled as smtp_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_oracle\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to Oracle ports (labeled as oracle_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_mysql\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to MySQL/MariaDB ports (labeled as mysqlde_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_pgsql\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to PostgreSQL ports (labeled as postgresql_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_redis\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to Redis ports (labeled as redis_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_couchdb\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to CouchDB ports (labeled as couch_port_t).
+.RE
+.PP
+\fBallow_springbatch_connectto_mongodb\fR (false)
+.RS 4
+Whether to allow the Springbatch job to connect (TCP) to MongoDB ports (labeled as mongod_port_t).
+.RE
+.PP
+\fBallow_springbatch_dynamic_libs\fR (false)
+.RS 4
+Whether to allow the Springbatch job to create and use (execute/map) dynamic libraries.
+.RE
+.PP
+\fBallow_springbatch_purge_logs\fR (false)
+.RS 4
+Whether to allow the Springbatch job to delete its log files.
+.RE
+.PP
+\fBallow_webadm_read_springbatch_files\fR (false)
+.RS 4
+Whether to allow users processes running in the \fIwebadm_t\fR SELinux domain to read Springbatch job files.
+.RE
+.PP
+\fBallow_sysadm_write_springbatch_files\fR (false)
+.RS 4
+Whether to allow users processes running in the \fIsysadm_t\fR SELinux domain to modify/alter Springbatch job files.
+.RE
+.PP
+\fBallow_sysadm_manage_springbatch_auth_files\fR (false)
+.RS 4
+Whether to allow users processes running in the \fIsysadm_t\fR SELinux domain to modify/alter Springbatch job authentication/sensitive files.
+.RE
+.PP
+.RE
+
+.SH File Contexts
+.PP
+\fBspringbatch_conf_t\fR
+.RS 4
+Files containing (not highly sensitive) configuration properties and information.
+(Cannot be altered by the Springbatch job)
+.RE
+.PP
+\fBspringbatch_auth_t\fR
+.RS 4
+Files containing sensitive/confidential configuration properties and authentication information.
+(Cannot be altered by the Springbatch job)
+.RE
+.PP
+\fBspringbatch_log_t\fR
+.RS 4
+Job log files, may contain sensitive information.
+(Append-only access by the Springbatch job, by default)
+.RE
+.PP
+\fBspringbatch_var_t\fR
+.RS 4
+Job (various) data files, persistent across job restart and system reboot.
+.RE
+.PP
+\fBspringbatch_run_t\fR
+.RS 4
+Job (various) data transient/volative files, not persistent across job restart and system reboot.
+.RE
+.PP
+\fBspringbatch_tmp_t\fR
+.RS 4
+Job temporary files.
+.RE
+.PP
+\fBspringbatch_bin_t\fR
+.RS 4
+Job binary/executables files.
+(Cannot be altered by the Springbatch job)
+.RE
+.PP
+\fBspringbatch_lib_t\fR
+.RS 4
+Job libraries files, such as JAR files or .SO files in case os native call/interface.
+(Cannot be altered by the Springbatch job)
+.RE
+.PP
+\fBspringbatch_dynlib_t\fR
+.RS 4
+Job dynamic libraries files. May be deployed/created/rewritten by the Springbatch job itself.
+.RE
+.PP
+\fBspringbatch_unit_file_t\fR
+.RS 4
+systemd unit files to control/manage the Springbatch job services and targets.
+(Cannot be altered by the Springbatch job)
+.RE
+
+.SH Interfaces
+.PP
+The Springbatch SELinux policy is shipped with a set of "interfaces" to easily extend the policy.
+.br
+To use a given interface a small SELinux policy module source code must be created, compiled and finally loaded.
+.SS "Deployment interfaces"
+.PP
+\fBspringbatch_deployer(\fRdeployer\fB)\fR
+.RS 4
+Allows the SELinux domain/type deployer_t passed as its argument to deploy Springbatch job files and to manage (stop/start/enable/disable) Springbatch systemd units.
+.RE
+.PP
+\fBspringbatch_systemd_deployer(\fRdeployer\fB)\fR
+.RS 4
+Allows the SELinux domain/type deployer_t passed as its first argument to deploy Springbatch unit_name systemd unit files.
+.RE
+.PP
+\fBspringbatch_systemd_unit_instance_deployer(\fRdeployer\fB, \fRunit_name\fB)\fR
+.RS 4
+Allows the SELinux domain/type deployer_t passed as its first argument to deploy Springbatch named unit_name systemd unit files passed as its second argument.
+.RE
+.PP
+\fBspringbatch_auth_deployer(\fRdeployer\fB)\fR
+.RS 4
+Allows the SELinux domain/type deployer_t passed as its argument to deploy Springbatch sensitive configuration files.
+.RE
+.PP
+.RS 2
+\fBExample:\fR SELinux source code to allow Ansible (ansible_t) to deploy the Springbatch job
+.RS 2
+policy_module(springbatch_ansible_deployment, 1.0.0)
+.br
+springbatch_deployer(ansible)
+.br
+springbatch_auth_deployer(ansible)
+.RE
+.PP
+.SS "Connection interfaces"
+.PP
+\fBspringbatch_allow_connectto(\fRservice_name\fB)\fR
+.RS 4
+Allows job running in the springbatch_t domain to connect to the SELinux (tcp) port \fIservice_name\fR_port_t passed as its argument.
+.RE
+.PP
+\fBspringbatch_allow_consumed_service(\fRservice_name\fB)\fR
+.RS 4
+Allows job running in the springbatch_t domain to consume (UDP/TCP) the network services linked to SELinux port \fIservice_name\fR_port_t passed as its argument.
+.RE
+
+.SH Author
+.PP
+The Springbatch SELinux policy was initially authored by Hubert Quarantel-Colombani and is now published and maintained by LHQG <https://lhqg.fr/>
+.RE
+
+.SH "See Also"
+.PP
+\fBselinux\fR(8),
+\fBsemanage\fR(8),
+\fBrestorecon\fR(8),
+\fBsepolicy\fR(8),
+\fBsetsebool\fR(8)
+.PP
+LHQG GitHub repository <https://github.com/lhqg/selinux_springbatch/>
