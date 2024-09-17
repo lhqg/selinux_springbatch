@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.9.0)
+policy_module(springbatch, 0.10.0)
 
 ########################################
 #
@@ -88,6 +88,8 @@ systemd_unit_file(springbatch_unit_file_t);
 
 bool	allow_springbatch_connectto_http		true;
 
+bool	allow_springbatch_syslog_netsend		false;
+
 bool	allow_springbatch_connectto_smtp		false;
 bool	allow_springbatch_connectto_ldap		false;
 
@@ -115,6 +117,8 @@ gen_require(`
 	type	redis_port_t;
 	type	couchdb_port_t;
 	type	mongod_port_t;
+	type	syslog_tls_port_t;
+	type	syslogd_port_t;
 
 	type	proc_t;
 	type	proc_net_t;
@@ -236,6 +240,13 @@ corenet_tcp_connect_ocsp_port(springbatch_t)
 
 if (allow_springbatch_connectto_http) {
 	allow	springbatch_t	http_port_t:tcp_socket		name_connect;
+}
+
+if (allow_springbatch_syslog_netsend) {
+	allow	springbatch_t	syslogd_port_t:tcp_socket		name_connect;
+	allow	springbatch_t	syslogd_port_t:udp_socket		send_msg;
+	allow	springbatch_t	syslog_tls_port_t:tcp_socket	name_connect;
+	allow	springbatch_t	syslog_tls_port_t:udp_socket	send_msg;
 }
 
 if (allow_springbatch_connectto_ldap) {

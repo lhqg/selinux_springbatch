@@ -51,7 +51,7 @@ interface(`springbatch_allow_connectto',`
 ## </summary>
 ## <param name="service">
 ##      <summary>
-##      The service name prefix to allow connection to (TCP).
+##      The service name prefix to be consumed.
 ##	e.g.: ldap
 ##      </summary>
 ## </param>
