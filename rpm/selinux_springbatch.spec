@@ -36,6 +36,7 @@ The Springboot batch job will run in the springbatch_t domain.
 
 %build
 
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir} clean
 make -f /usr/share/selinux/devel/Makefile -C %{_builddir} springbatch.pp
 
 ###################################
@@ -49,6 +50,9 @@ mkdir -p -m 0755 %{buildroot}/%{_datarootdir}/%{name}
 install -m 0555 %{_builddir}/scripts/* %{buildroot}/%{_datarootdir}/%{name}/
 install -m 0444 %{_builddir}/springbatch.pp %{buildroot}/usr/share/selinux/packages/targeted/
 install -m 0444 %{_builddir}/{LICENSE,README.md} %{buildroot}/%{_docdir}/%{name}/
+install -m 0444 %{_builddir}/manpages/man8/*.8 %{buildroot}/usr/share/man/man8/
+
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir} clean
 
 ###################################
 

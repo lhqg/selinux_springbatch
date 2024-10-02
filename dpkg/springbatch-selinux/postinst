@@ -1,0 +1,16 @@
+#!/bin/bash
+
+bunzip2 /usr/share/selinux/default/springbatch.pp.bz2
+semodule -i /usr/share/selinux/default/springbatch.pp
+RC=$?
+bzip2 /usr/share/selinux/default/springbatch.pp
+
+if selinuxenabled
+then
+  restorecon -RFi /{opt,srv}/springbatch 
+  restorecon -RFi /{lib,etc}/systemd/system/springbatch*
+  restorecon -RFi /var/{lib,log,run,tmp}/springbatch
+  restorecon -RFi /usr/share/man
+fi
+
+exit $RC

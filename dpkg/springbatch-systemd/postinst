@@ -1,0 +1,10 @@
+#!/bin/bash
+
+systemctl daemon-reload
+
+if selinuxenabled
+then
+  restorecon -Fi /opt/springbatch/bin/springbatch-service.sh
+  restorecon -RFi /{lib,etc}/systemd/system/springbatch*
+  restorecon -RFi /usr/share/doc/springbatch-systemd/
+fi
