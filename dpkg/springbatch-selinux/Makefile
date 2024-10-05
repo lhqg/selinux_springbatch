@@ -4,7 +4,7 @@ DESTDIR ?= %builddir%/debian/%name%
 DOCDIR := /usr/share/doc
 DATAROOTDIR := /usr/share
 
-compile:
+install:
 	@make -f /usr/share/selinux/devel/Makefile -C $(SOURCEDIR)/se_module clean
 	@rm -f $(SOURCEDIR)/se_module/springbatch.pp.bz2
 	@make -f /usr/share/selinux/devel/Makefile -C $(SOURCEDIR)/se_module springbatch.pp

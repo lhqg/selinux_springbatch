@@ -73,7 +73,7 @@ fi
 
 if [ $1 -eq 0 ]
 then
-  semodule -r springbatch
+  semodule -l | grep qvw springbatch || semodule -r springbatch
 fi
 
 ###################################

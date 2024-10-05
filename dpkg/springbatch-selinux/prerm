@@ -4,7 +4,7 @@ RC=0
 
 if [[ "$1" == "remove" ]]
 then
-	semodule -r springbatch
+	semodule -l | grep -qvW springbatch || semodule -r springbatch
 	RC=$?
 fi
 
