@@ -1,0 +1,70 @@
+'\" t
+.TH springbatch\-systemd 7 "Springbatch systemd units man page"
+
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH Name
+springbatch\-systemd \- systemd units for Java Spring batch/jobs services
+
+.SH Description
+.PP
+The \fBspringbatch-systemd\fR package deploys \fIsystemd\fR unit definitions to
+simplify Java Spring batch/job oneshot services operations such as start, stop, status control.
+.PP
+
+.SH systemd units
+.PP
+
+.SS Template service unit 
+.PP
+\fBspringbatch@.service\fR
+.RS 4
+This unit is a template unit designed to manage all Spring batchs/jobs the same way in terms
+of service operations.
+.PP
+The service unit relies on the MANDATORY files/directories:
+.RS 4
+- /opt/springbatch/<\fIinstance name\fR>: main installation directory for a specific Spring batch/job
+.br
+- /opt/springbatch/<\fIinstance name\fR>/env: environment file with paramaters needed by the Java VM
+for a specific Spring batch/job (See example file \fI/usr/share/doc/springbatch-systemd/env.SAMPLE\fR)
+.PP
+.RE
+.RS 4
+For a given batch named \fIMyJob\fR, the corresponding systemd service inistance is 
+\fBspringbatch@\fIMyJob\fR\fB.service\fR.
+.br
+The required environment file is \fB/opt/springbatch/\fIMyJob\fB/env\fR
+.RE
+.PP
+
+.SH Author
+.PP
+The Springbatch systemd units package was initially authored by Hubert Quarantel-Colombani and is now published and maintained by LHQG <https://lhqg.fr/>
+.RE
+
+.SH "See Also"
+.PP
+\fBspringbatch_selinux\fR(8),
+\fBsystemd\fR(1),
+\fBsystemctl\fR(1)
+.PP
+LHQG GitHub repository <https://github.com/lhqg/selinux_springbatch/>

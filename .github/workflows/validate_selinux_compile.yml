@@ -28,58 +28,74 @@ env:
 
 jobs:
 
-  compile_el8:
-    name: Validate SELinux code (EL 8)
+  compile_el:
+    name: Compile SELinux code for Red Hat EL family branch
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        el_vers: [ '8', '9' ]
+        
     steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@almalinux8
+      - name: Checkout SELinux code
+        uses: actions/checkout@master
 
-  compile_el9:
-    name: Validate SELinux code (EL 9)
+      - name: Compile SELinux code
+        uses: lhqg/selinux_compile@main
+        with:
+          distro: 'almalinux'
+          distro_vers: ${{ matrix.el_vers }}
+
+  compile_fedora:
+    name: Compile SELinux code for Fedora family branch
     runs-on: ubuntu-latest
-    continue-on-error: true
-
+    strategy:
+      matrix:
+        fedora_vers: [ '37', '38', '39', '40' ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@centos9
+      - name: Checkout SELinux code
+        uses: actions/checkout@master
 
-  compile_fedora37:
-    name: Validate SELinux code (Fedora 37)
+      - name: Compile SELinux code
+        uses: lhqg/selinux_compile@main
+        with:
+          distro: 'fedora'
+          distro_vers: ${{ matrix.fedora_vers }}
+
+  compile_ubuntu:
+    name: Compile SELinux code for Ubuntu family branch
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        ubuntu_vers: [ '22.04', '24.04' ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@fedora37
+      - name: Checkout SELinux code
+        uses: actions/checkout@master
 
-  compile_fedora38:
-    name: Validate SELinux code (Fedora 38)
+      - name: Compile SELinux code
+        uses: lhqg/selinux_compile@main
+        with:
+          distro: 'ubuntu'
+          distro_vers: ${{ matrix.ubuntu_vers }}
+
+  compile_debian:
+    name: Compile SELinux code for Debian family branch
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        debian_vers: [ '11', '12' ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@fedora38
+      - name: Checkout SELinux code
+        uses: actions/checkout@master
 
-  compile_fedora39:
-    name: Validate SELinux code (Fedora 39)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@fedora39
-
-  compile_fedora40:
-    name: Validate SELinux code (Fedora 40)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@fedora40
+      - name: Compile SELinux code
+        uses: lhqg/selinux_compile@main
+        with:
+          distro: 'debian'
+          distro_vers: ${{ matrix.debian_vers }}
 
   semodule_info:
     name: Get SELinux module informations
-    needs: [ compile_el8, compile_el9, compile_fedora37, compile_fedora38, compile_fedora39, compile_fedora40 ]
+    needs: [ compile_el, compile_fedora, compile_ubuntu, compile_debian ]
       
     runs-on: ubuntu-latest
     
@@ -92,7 +108,7 @@ jobs:
       semodule_vers: ${{ steps.semodule_chars.outputs.semodule_vers }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
 
       - name: Get SELinux policy module characteristics
         id: semodule_chars
@@ -111,10 +127,9 @@ jobs:
             module_vers=a[2]
           }
           END {
-            print "::set-output name=semodule_name::"module_name
-            print "::set-output name=semodule_vers::"module_vers
-          }' se_module/${SEMODULE}.te
-
+            print "semodule_name="module_name
+            print "semodule_vers="module_vers
+          }' se_module/${SEMODULE}.te >> $GITHUB_OUTPUT
 
   add_tag:
     name: Add SELinux module version tag on the branch
@@ -125,7 +140,14 @@ jobs:
     if: ( github.event_name == 'push' && ( github.ref_name == 'main' || startsWith(github.ref_name, 'release/') ) )
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
+
+      - name: Run Changelog CI
+        uses: saadmk11/changelog-ci@v1.1.2
+        with:
+          release_version: v${{ needs.semodule_info.outputs.semodule_vers }}
+          config_file: changelog-ci-config.yml
+
 
       - name: Tag the branch with the SELinux module version and draft a pre-release
         uses: actions/create-release@latest
@@ -136,4 +158,5 @@ jobs:
           release_name: Release candidate for v${{ needs.semodule_info.outputs.semodule_vers }}
           draft: true
           prerelease: true
+          body_path: CHANGELOG.md
       

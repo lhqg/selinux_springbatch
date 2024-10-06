@@ -102,7 +102,14 @@ interface(`springbatch_deployer',`
 		type		var_log_t;
 		type		usr_t;
 		type		tmp_t;
+		
+		class		service	all_service_perms;
 	')
+
+	ifdef(`distro_debian', `
+		define(`manage_service_perms', `{ start stop status reload enable disable } ')
+	')
+
 
 	# Top-level dirs type transitions
 	type_transition $1_t var_t:dir		springbatch_var_t "springboot" ;

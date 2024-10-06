@@ -1,0 +1,12 @@
+Source: springbatch-systemd
+Maintainer: LHQG SAS <tehcnical@lhqg.fr>
+Homepage: https://github.com/lhqg/selinux_springbatch
+Section: misc
+Priority: optional
+Standards-Version: 4.7.0
+Build-depends: debhelper-compat (= 13)
+
+Package: springbatch-systemd
+Architecture: all
+Depends: springbatch-selinux (= %version%), systemd
+Description: Springbatch systemd units

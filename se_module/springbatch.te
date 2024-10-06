@@ -24,7 +24,7 @@
 #
 ############################################################################
 
-policy_module(springbatch, 0.10.0)
+policy_module(springbatch, 0.11.0)
 
 ########################################
 #
@@ -37,7 +37,22 @@ attribute	springbatch_deploy_file_type;
 
 attribute	springbatch_consumed_svc_type;
 
-systemd_domain_template(springbatch)
+ifdef(`distro_redhat',`
+        systemd_domain_template(springbatch)
+')
+
+ifdef(`distro_debian',`
+        type springbatch_t;
+        type springbatch_exec_t;
+
+        init_daemon_domain(springbatch_t, springbatch_exec_t)
+
+        allow init_t springbatch_t:process2 { nnp_transition nosuid_transition };
+
+        kernel_read_system_state(springbatch_t)
+        auth_use_nsswitch(springbatch_t)
+')
+
 typeattribute	springbatch_exec_t	springbatch_file_type;
 typeattribute	springbatch_exec_t	springbatch_deploy_file_type;
 
@@ -84,7 +99,12 @@ typeattribute	springbatch_dynlib_t	springbatch_deploy_file_type;
 files_type(springbatch_dynlib_t)
 
 type		springbatch_unit_file_t;
-systemd_unit_file(springbatch_unit_file_t);
+ifdef(`distro_redhat',`
+	systemd_unit_file(springbatch_unit_file_t);
+')
+ifdef(`distro_debian',`
+	init_unit_file(springbatch_unit_file_t);
+')
 
 bool	allow_springbatch_connectto_http		true;
 
@@ -93,12 +113,15 @@ bool	allow_springbatch_syslog_netsend		false;
 bool	allow_springbatch_connectto_smtp		false;
 bool	allow_springbatch_connectto_ldap		false;
 
+ifdef(`distro_redhat',`
 bool	allow_springbatch_connectto_oracle		false;
+bool	allow_springbatch_connectto_mongodb		false;
+')
+
 bool	allow_springbatch_connectto_mysql		false;
 bool	allow_springbatch_connectto_pgsql		false;
 bool	allow_springbatch_connectto_redis		false;
 bool	allow_springbatch_connectto_couchdb		false;
-bool	allow_springbatch_connectto_mongodb		false;
 
 bool	allow_springbatch_dynamic_libs			false;
 bool	allow_springbatch_purge_logs			false;
@@ -111,12 +134,14 @@ gen_require(`
 	type	http_port_t;
 	type	smtp_port_t;
 	type	ldap_port_t;
+ifdef(`distro_redhat',`
+	type	mongod_port_t;
 	type	oracle_port_t;
+')
 	type	mysqld_port_t;
 	type	postgresql_port_t;
 	type	redis_port_t;
 	type	couchdb_port_t;
-	type	mongod_port_t;
 	type	syslog_tls_port_t;
 	type	syslogd_port_t;
 
@@ -129,7 +154,9 @@ gen_require(`
 	type	bin_t;
 	type	tmp_t;
 	type	shell_exec_t;
+ifdef(`distro_redhat',`
 	type	passwd_file_t;
+')
 	type	cert_t;
 
 	type	user_tmp_t;
@@ -142,7 +169,17 @@ gen_require(`
 	role	system_r;
 	
 	attribute	domain;
+
+	class	service	all_service_perms;
 ')
+ifdef(`distro_debian', `
+	define(`manage_service_perms', `{ start stop status reload enable disable } ')
+	define(`lhqg__sendrecv_udp_socket_perms', `{ sendto recvfrom } ')
+')
+ifdef(`distro_redhat', `
+	define(`lhqg__sendrecv_udp_socket_perms', `{ sendto recvfrom send_msg recv_msg } ')
+')
+
 
 ########################################
 #
@@ -172,7 +209,16 @@ files_read_config_files(springbatch_t)
 fs_read_noxattr_fs_files(springbatch_t)
 fs_read_noxattr_fs_symlinks(springbatch_t)
 fs_rw_cgroup_files(springbatch_t)
-application_getattr_socket(springbatch_t)
+
+ifdef(`distro_redhat',`
+	application_getattr_socket(springbatch_t)
+')
+ifdef(`distro_redhat',`
+	gen_require(`
+        attribute application_domain_type;
+    ')
+    allow springbatch_t	application_domain_type:socket_class_set getattr;
+')
 
 dev_read_rand(springbatch_t)
 
@@ -227,7 +273,9 @@ allow	springbatch_t	user_tmp_t:file		{ manage_file_perms map };
 
 allow	springbatch_t	user_home_dir_t:dir	{ list_dir_perms };
 
+ifdef(`distro_redhat',`
 allow	springbatch_t	passwd_file_t:file	{ read	open	getattr };
+')
 allow	springbatch_t	shell_exec_t:file	{ getattr	open	read	execute};
 
 allow	springbatch_t	cert_t:dir		list_dir_perms;
@@ -244,9 +292,8 @@ if (allow_springbatch_connectto_http) {
 
 if (allow_springbatch_syslog_netsend) {
 	allow	springbatch_t	syslogd_port_t:tcp_socket		name_connect;
-	allow	springbatch_t	syslogd_port_t:udp_socket		send_msg;
+	allow	springbatch_t	syslogd_port_t:udp_socket		lhqg__sendrecv_udp_socket_perms;
 	allow	springbatch_t	syslog_tls_port_t:tcp_socket	name_connect;
-	allow	springbatch_t	syslog_tls_port_t:udp_socket	send_msg;
 }
 
 if (allow_springbatch_connectto_ldap) {
@@ -258,9 +305,15 @@ if (allow_springbatch_connectto_smtp) {
 }
 
 
+ifdef(`distro_redhat',`
 if (allow_springbatch_connectto_oracle) {
 	allow	springbatch_t	oracle_port_t:tcp_socket	name_connect;
 }
+
+if (allow_springbatch_connectto_mongodb) {
+	allow	springbatch_t	mongod_port_t:tcp_socket	name_connect;
+}
+')
 
 if (allow_springbatch_connectto_mysql) {
 	allow	springbatch_t	mysqld_port_t:tcp_socket	name_connect;	
@@ -278,13 +331,9 @@ if (allow_springbatch_connectto_couchdb) {
 	allow	springbatch_t	couchdb_port_t:tcp_socket	name_connect;
 }
 
-if (allow_springbatch_connectto_mongodb) {
-	allow	springbatch_t	mongod_port_t:tcp_socket	name_connect;
-}
-
 #	Allow to consume authorized network services
 allow	springbatch_t	springbatch_consumed_svc_type:tcp_socket		name_connect;
-allow	springbatch_t	springbatch_consumed_svc_type:udp_socket		{ recv_msg send_msg };
+allow	springbatch_t	springbatch_consumed_svc_type:udp_socket		lhqg__sendrecv_udp_socket_perms;
 
 #	Optionally allow to connect to Springboot application services
 optional {
