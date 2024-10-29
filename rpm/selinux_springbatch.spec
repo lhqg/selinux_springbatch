@@ -44,6 +44,7 @@ make -f /usr/share/selinux/devel/Makefile -C %{_builddir} springbatch.pp
 %install
 
 mkdir -p -m 0755 %{buildroot}/usr/share/selinux/packages/targeted
+mkdir -p -m 0755 %{buildroot}/usr/share/man/man8
 mkdir -p -m 0755 %{buildroot}/%{_docdir}/%{name}
 mkdir -p -m 0755 %{buildroot}/%{_datarootdir}/%{name}
 
@@ -89,3 +90,4 @@ fi
 %dir		%{_docdir}/%{name}
 %license 	%{_docdir}/%{name}/LICENSE
 %doc		%{_docdir}/%{name}/README.md
+%doc		/usr/share/man/man*/*
