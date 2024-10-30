@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! getent passwd springbatch >/dev/null; then
+  adduser --quiet --system --group --shell /usr/sbin/nologin springbatch
+fi
+
 systemctl daemon-reload
 
 if selinuxenabled
