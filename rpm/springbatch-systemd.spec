@@ -19,8 +19,13 @@ Definitions of systemd units for Springboot batch jobs.
 %clean
 %{__rm} -rf %{buildroot}
 
-#%prep
-#%setup -q
+####################################
+
+%pre
+
+getent group springbatch >/dev/null || groupadd -r springbatch
+getent passwd springbatch >/dev/null || useradd -r -g springbatch -s /sbin/nologin -d /home/springbatch -c "Springbatch" springbatch
+exit 0
 
 ###################################
 
