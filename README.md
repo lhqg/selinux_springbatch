@@ -8,7 +8,7 @@
 
 # SELinux policy module for Springboot batch jobs
 
-<https://github.com/lhqg/selinux_springbatch>
+Maintained and provided as a community contribution by [LHQG](https://www.lhqg.fr/).
 
 ## Introduction
 
