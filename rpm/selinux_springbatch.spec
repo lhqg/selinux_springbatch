@@ -29,15 +29,25 @@ The Springboot batch job will run in the springbatch_t domain.
 %clean
 %{__rm} -rf %{buildroot}
 
-#%prep
-#%setup -q
+###################################
+
+%prep
+
+if [ ! -d %{_builddir}/se_module -a -d %{_builddir}/../se_module ]
+then
+  ln -s %{_builddir}/../se_module   %{_builddir}/
+  ln -s %{_builddir}/../scripts     %{_builddir}/
+  ln -s %{_builddir}/../README.md   %{_builddir}/
+  ln -s %{_builddir}/../LICENSE     %{_builddir}/
+  ln -s %{_builddir}/../manpages    %{_builddir}/
+fi
 
 ###################################
 
 %build
 
-make -f /usr/share/selinux/devel/Makefile -C %{_builddir} clean
-make -f /usr/share/selinux/devel/Makefile -C %{_builddir} springbatch.pp
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir}/se_module clean
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir}/se_module springbatch.pp
 
 ###################################
 
@@ -49,11 +59,11 @@ mkdir -p -m 0755 %{buildroot}/%{_docdir}/%{name}
 mkdir -p -m 0755 %{buildroot}/%{_datarootdir}/%{name}
 
 install -m 0555 %{_builddir}/scripts/* %{buildroot}/%{_datarootdir}/%{name}/
-install -m 0444 %{_builddir}/springbatch.pp %{buildroot}/usr/share/selinux/packages/targeted/
+install -m 0444 %{_builddir}/se_module/springbatch.pp %{buildroot}/usr/share/selinux/packages/targeted/
 install -m 0444 %{_builddir}/{LICENSE,README.md} %{buildroot}/%{_docdir}/%{name}/
 install -m 0444 %{_builddir}/manpages/man8/*.8 %{buildroot}/usr/share/man/man8/
 
-make -f /usr/share/selinux/devel/Makefile -C %{_builddir} clean
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir}/se_module clean
 
 ###################################
 
