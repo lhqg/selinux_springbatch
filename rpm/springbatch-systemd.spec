@@ -29,6 +29,16 @@ exit 0
 
 ###################################
 
+%prep
+
+if [ ! -d %{_builddir}/se_module -a -d %{_builddir}/../se_module ]
+then
+  ln -s %{_builddir}/../systemd   %{_builddir}/
+  ln -s %{_builddir}/../manpages  %{_builddir}/
+fi
+
+###################################
+
 %install
 
 mkdir -p -m 0755 %{buildroot}/%{_docdir}/%{name}/examples

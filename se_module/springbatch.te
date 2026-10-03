@@ -476,7 +476,7 @@ allow	logadm_t	springbatch_file_type:lnk_file				read_lnk_file_perms;
 allow	logadm_t	springbatch_log_t:dir		{ list_dir_perms del_entry_dir_perms delete_dir_perms create_dir_perms reparent };
 allow	logadm_t	springbatch_log_t:file		{ delete_file_perms rename_file_perms };
 
-allow	webadm_t	springbatch_unit_file_t:service	status;
+allow	logadm_t	springbatch_unit_file_t:service	status;
 
 filetrans_add_pattern(logadm_t,	springbatch_log_t, springbatch_log_t, dir)
 

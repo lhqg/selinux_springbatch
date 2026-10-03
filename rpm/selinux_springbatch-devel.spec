@@ -19,8 +19,14 @@ SELinux policy development interface for Springbatch policy module.
 %clean
 %{__rm} -rf %{buildroot}
 
-#%prep
-#%setup -q
+###################################
+
+%prep
+
+if [ ! -d %{_builddir}/se_module -a -d %{_builddir}/../se_module ]
+then
+  ln -s %{_builddir}/../se_module %{_builddir}/
+fi
 
 ###################################
 
